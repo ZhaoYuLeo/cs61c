@@ -1,4 +1,4 @@
-1.
-2.
-3.
-4.
+1. find <path> -name <pattern>
+2. top / ps -A
+3. kill -15  <PID>
+4. diff <file1> <file2>
