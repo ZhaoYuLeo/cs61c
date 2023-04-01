@@ -1,8 +1,9 @@
-1. mv <source> <target>
-2. chmod <mode> <file>
-3. pwd
-4. ping <host> 
-5. find <path> -name <pattern>
-6. top / ps -A
-7. kill -15  <PID>
-8. diff <file1> <file2>
+1. ls -lh <path> # stat <path>
+2. mv <source> <target>
+3. chmod <mode> <file>
+4. pwd
+5. ping <host> 
+6. find <path> -name <pattern>
+7. top # ps -A
+8. kill -15  <PID>
+9. diff <file1> <file2>
