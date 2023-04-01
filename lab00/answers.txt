@@ -1,4 +1,5 @@
-1. find <path> -name <pattern>
-2. top / ps -A
-3. kill -15  <PID>
-4. diff <file1> <file2>
+1. ls -lh <path> # stat <path>
+2. find <path> -name <pattern>
+3. top # ps -A
+4. kill -15  <PID>
+5. diff <file1> <file2>
