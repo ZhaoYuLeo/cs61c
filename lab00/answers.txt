@@ -1,5 +1,9 @@
 1. ls -lh <path> # stat <path>
-2. find <path> -name <pattern>
-3. top # ps -A
-4. kill -15  <PID>
-5. diff <file1> <file2>
+2. mv <source> <target>
+3. chmod <mode> <file>
+4. pwd
+5. ping <host> 
+6. find <path> -name <pattern>
+7. top # ps -A
+8. kill -15  <PID>
+9. diff <file1> <file2>
