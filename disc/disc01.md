@@ -61,13 +61,25 @@ common radices: (binary, decimal, and hex)
 
 ### 3 Signed Integers
 
-3.1 For questions (a) through (c), assume an 8-bit integer and answer each one for the case of an unsigned number, biased number with a bias of -127, and two’s complement number. Indicate if it cannot be answered with a specific representation.
+3.1 For questions (a) through (c), assume an <u>8-bit</u> integer and answer each one for the case of an unsigned number, biased number with a bias of -127, and two’s complement number. Indicate if it cannot be answered with a specific representation.
 
 (a) What is the largest integer? What is the result of adding one to that number?
 
+1. Unsigned? 255, 0
+2. Biased? 128, -127
+3. Two's Complement? 127, -128
+
 (b) How would you represent the numbers 0, 1, and -1?
 
+1. Unsigned? 0b0000 0000, 0b0000 0001, can't represent -1
+2. Biased? 0b0111 1111, 0b1000 0000, 0b 0111 1110
+3. Two's Complement? 0b0000 0000, 0b0000 0001, 0b1111 1111
+
 (c) How would you represent 17 and -17?
+
+1. Unsigned? 0b0001 0001, can't represent -17
+2. Biased? 0b1001 0000, 0b0110 1110
+3. Two's Complement? 0b0001 0001, 0b1110 1111
 
 (d) What is the largest integer that can be represented by any encoding scheme that only uses 8 bits?
 
