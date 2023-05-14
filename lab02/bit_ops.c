@@ -26,7 +26,7 @@ void set_bit(unsigned * x,
              unsigned n,
              unsigned v) {
     // YOUR CODE HERE
-    *x = ((*x) | ~mask_nth(n, 0)) & mask_nth(n, v); 
+    *x = ((*x) | (1 << n)) & mask_nth(n, v); 
 }
 
 // Flip the nth bit of the value of x.
@@ -34,7 +34,6 @@ void set_bit(unsigned * x,
 void flip_bit(unsigned * x,
               unsigned n) {
     // YOUR CODE HERE
-    unsigned nth = get_bit(*x, n);
-    set_bit(x, n, nth ^ 01);
+    *x = *x ^ (1 << n);
 }
 
