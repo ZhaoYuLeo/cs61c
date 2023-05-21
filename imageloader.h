@@ -10,7 +10,9 @@ typedef struct Color
 } Color;
 typedef struct Image
 {
+//a list of Color*, where each Color* stores the color of a single pixel
 	Color **image;
+// the dimensions of the image
 	uint32_t rows;
 	uint32_t cols;
 } Image;
