@@ -32,7 +32,17 @@ Color *evaluateOnePixel(Image *image, int row, int col)
 Image *steganography(Image *image)
 {
 	//YOUR CODE HERE
-    return image;
+    Image *extracted = (Image *) malloc(sizeof(Image));
+    uint32_t rows = extracted->rows = image->rows;
+    uint32_t cols = extracted->cols = image->cols;
+    Color **p = extracted->image = (Color **) calloc(rows * cols, sizeof(Color *));
+    for (int i = 0; i < rows; i += 1) {
+        for (int j = 0; j < cols; j += 1) {
+            *p = evaluateOnePixel(image, i, j);
+            p += 1;
+        }
+    }
+    return extracted;
 }
 
 /*
@@ -51,6 +61,7 @@ Make sure to free all memory before returning!
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
+    /*
     //Test evaluateOnePixel() function with `steganography <ppm_file>`
     Image *image = readData(argv[1]);
     printf("Loading image from %s...\n", argv[1]);
@@ -67,5 +78,16 @@ int main(int argc, char **argv)
         free(decoded);
     }
     freeImage(image);
+    */
+
+    //Test steganography() function with `steganography <ppm_file>`
+    Image *image = readData(argv[1]);
+    printf("Loading image from %s...\n", argv[1]);
+    writeData(image);
+    printf("\nDecoding the image...\n");
+    Image *decoded = steganography(image);
+    writeData(decoded);
+    freeImage(image);
+    freeImage(decoded);
     return 0;
 }
