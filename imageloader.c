@@ -20,7 +20,6 @@
 #include <string.h>
 #include "imageloader.h"
 
-Image image;
 
 //Opens a .ppm P3 image file, and constructs an Image object. 
 //You may find the function fscanf useful.
@@ -29,8 +28,7 @@ Image *readData(char *filename)
 {
     //Open the file with the given name.
     FILE *image_file = fopen(filename, "r");
-    if (image_file == NULL)
-    {
+    if (image_file == NULL) {
         printf("Error occurred while opening file %s.\n", filename);
         exit(1);
     }
@@ -40,8 +38,7 @@ Image *readData(char *filename)
     uint32_t cols_num, rows_num;
     int scale;
     fscanf(image_file, "%s" "%" SCNu32 "%" SCNu32 "%d", format, &cols_num, &rows_num, &scale);
-    if (strcmp(format, "P3") != 0 || scale != 255)
-    {
+    if (strcmp(format, "P3") != 0 || scale != 255) {
         printf("Not support this format %s with scale of %d currently.\n", format, scale);
         exit(1);
     }
