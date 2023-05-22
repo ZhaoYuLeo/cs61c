@@ -22,12 +22,17 @@
 Color *evaluateOnePixel(Image *image, int row, int col)
 {
 	//YOUR CODE HERE
+    Color *origin = image->image[image->cols * row + col]; //assume start at 0
+    Color *decoded = (Color *) malloc(sizeof(Color));
+    decoded->R = decoded->G = decoded->B = 255 * (origin->B & 1);
+    return decoded;
 }
 
 //Given an image, creates a new image extracting the LSB of the B channel.
 Image *steganography(Image *image)
 {
 	//YOUR CODE HERE
+    return image;
 }
 
 /*
@@ -46,4 +51,21 @@ Make sure to free all memory before returning!
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
+    //Test evaluateOnePixel() function with `steganography <ppm_file>`
+    Image *image = readData(argv[1]);
+    printf("Loading image from %s...\n", argv[1]);
+    writeData(image);
+    printf("\nDecoding the image...\n");
+    for (int i = 0; i < image->rows; i += 1) {
+        for (int j = 0; j < image->cols - 1; j += 1) {
+            Color *decoded = evaluateOnePixel(image, i, j);
+            printf("%3hhu %3hhu %3hhu   ", decoded->R, decoded->G, decoded->B);
+            free(decoded);
+        }
+        Color *decoded = evaluateOnePixel(image, i, image->cols - 1);
+        printf("%3hhu %3hhu %3hhu\n", decoded->R, decoded->G, decoded->B);
+        free(decoded);
+    }
+    freeImage(image);
+    return 0;
 }
