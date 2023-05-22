@@ -23,7 +23,11 @@ Color *evaluateOnePixel(Image *image, int row, int col)
 {
 	//YOUR CODE HERE
     Color *origin = image->image[image->cols * row + col]; //assume start at 0
-    Color *decoded = (Color *) malloc(sizeof(Color));
+    //I hope there are some simple ways.
+    Color *decoded;
+    if ((decoded = (Color *) malloc(sizeof(Color))) == NULL) {
+        exit(-1);
+    }
     decoded->R = decoded->G = decoded->B = 255 * (origin->B & 1);
     return decoded;
 }
@@ -32,10 +36,16 @@ Color *evaluateOnePixel(Image *image, int row, int col)
 Image *steganography(Image *image)
 {
 	//YOUR CODE HERE
-    Image *extracted = (Image *) malloc(sizeof(Image));
+    Image *extracted; 
+    if ((extracted = (Image *) malloc(sizeof(Image)))== NULL) {
+        exit(-1);
+    }
     uint32_t rows = extracted->rows = image->rows;
     uint32_t cols = extracted->cols = image->cols;
-    Color **p = extracted->image = (Color **) calloc(rows * cols, sizeof(Color *));
+    if ((extracted->image = (Color **) calloc(rows * cols, sizeof(Color *))) == NULL) {
+       exit(-1);
+    } 
+    Color **p = extracted->image; 
     for (int i = 0; i < rows; i += 1) {
         for (int j = 0; j < cols; j += 1) {
             *p = evaluateOnePixel(image, i, j);
@@ -61,6 +71,22 @@ Make sure to free all memory before returning!
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
+    if (argc < 2) {
+        printf("Please enter a file name of ppm P3 format as argument.\n");
+        exit(-1);
+    }
+    if (argc > 2) {
+        printf("You should only given one file name of ppm P3 format as argument. Redundant information will be ignored in this case.\n");
+    }
+    //I hope this subroutines can throw error out if a malloc fails so I can handle them
+    //I have no idea if they function well(exit with code -1 if any error occurs)
+    Image *image = readData(argv[1]);
+    Image *decoded = steganography(image);
+    writeData(decoded);
+    //Hope them work fine
+    freeImage(image);
+    freeImage(decoded);
+    return 0;
     /*
     //Test evaluateOnePixel() function with `steganography <ppm_file>`
     Image *image = readData(argv[1]);
@@ -78,8 +104,10 @@ int main(int argc, char **argv)
         free(decoded);
     }
     freeImage(image);
+    return 0;
     */
 
+    /*
     //Test steganography() function with `steganography <ppm_file>`
     Image *image = readData(argv[1]);
     printf("Loading image from %s...\n", argv[1]);
@@ -90,4 +118,5 @@ int main(int argc, char **argv)
     freeImage(image);
     freeImage(decoded);
     return 0;
+    */
 }

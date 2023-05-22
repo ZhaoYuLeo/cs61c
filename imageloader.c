@@ -30,7 +30,7 @@ Image *readData(char *filename)
     FILE *image_file = fopen(filename, "r");
     if (image_file == NULL) {
         printf("Error occurred while opening file %s.\n", filename);
-        exit(1);
+        exit(-1);
     }
 
     //Read basic info and do simple verification.
@@ -40,7 +40,7 @@ Image *readData(char *filename)
     fscanf(image_file, "%s" "%" SCNu32 "%" SCNu32 "%d", format, &cols_num, &rows_num, &scale);
     if (strcmp(format, "P3") != 0 || scale != 255) {
         printf("Not support this format %s with scale of %d currently.\n", format, scale);
-        exit(1);
+        exit(-1);
     }
     
     //New an Image object.
