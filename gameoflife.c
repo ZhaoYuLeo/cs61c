@@ -18,18 +18,14 @@
 #include "imageloader.h"
 
 
-int _state(Color **p, int bias) {
-    return (*(p + bias))->B & 1;
-}
-
-int _adjacentState(Image *image, int raw_row, int raw_col) {
+int _state(Image *image, int raw_row, int raw_col) {
     Color **p = image->image;
-    int cols = image->cols;
-    int rows = image->rows;
-    int row = (raw_row < 0) ? rows - 1 : ((raw_row > rows - 1) ? 0 : raw_row);
-    int col = (raw_col < 0) ? cols - 1 : ((raw_col > cols - 1) ? 0 : raw_col);
-    int state = _state(p, row * cols + col);
-    return state; 
+    int cols = image->cols - 1;
+    int rows = image->rows - 1;
+    int row = (raw_row < 0) ? rows : ((raw_row > rows) ? 0 : raw_row);
+    int col = (raw_col < 0) ? cols : ((raw_col > cols) ? 0 : raw_col);
+    int bias = row * (cols + 1) + col;
+    return (*(p + bias))->B & 1;
 }
 
 //Determines what color the cell at the given row/col should be. This function allocates space for a new Color.
@@ -39,15 +35,13 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 {
 	//YOUR CODE HERE
     //Assume the rule is a hexadecimal number between 0x00000 and 0x3FFFF.
-    Color **p = image->image;
-    int mine = row * image->cols + col;
     //State: alive(1) or dead(0)
-    int my_state = _state(p, mine); 
+    int my_state = _state(image, row, col); 
     //The number of alive neighbors
-    int alive_n = _adjacentState(image, row - 1, col) + _adjacentState(image, row + 1, col)
-                  + _adjacentState(image, row, col - 1) + _adjacentState(image, row, col + 1)
-                  + _adjacentState(image, row - 1, col - 1) + _adjacentState(image, row + 1, col + 1) 
-                  + _adjacentState(image, row - 1, col + 1) + _adjacentState(image, row + 1, col - 1);
+    int alive_n = _state(image, row - 1, col) + _state(image, row + 1, col)
+                  + _state(image, row, col - 1) + _state(image, row, col + 1)
+                  + _state(image, row - 1, col - 1) + _state(image, row + 1, col + 1) 
+                  + _state(image, row - 1, col + 1) + _state(image, row + 1, col - 1);
     //Determines color by rule
     Color *decoded;
     if ((decoded = (Color *) malloc(sizeof(Color))) == NULL) {
