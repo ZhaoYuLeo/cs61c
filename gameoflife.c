@@ -17,14 +17,17 @@
 #include <inttypes.h>
 #include "imageloader.h"
 
-
+//Return the state of the cell at the given row/col.
+//This is one part of the implement of the fun evaluateOneCell. Shouldn't be viewed outside this file.
 int _state(Image *image, int raw_row, int raw_col) {
     Color **p = image->image;
-    int cols = image->cols - 1;
-    int rows = image->rows - 1;
-    int row = (raw_row < 0) ? rows : ((raw_row > rows) ? 0 : raw_row);
-    int col = (raw_col < 0) ? cols : ((raw_col > cols) ? 0 : raw_col);
-    int bias = row * (cols + 1) + col;
+    int cols = image->cols;
+    int rows = image->rows;
+    //The top of the top is the bottom, the bottom of the bottom is the top.
+    int row = (raw_row + rows) % rows;
+    //The left of the left is the right, the right of the right is the left.
+    int col = (raw_col + cols) % cols;
+    int bias = row * cols + col;
     return (*(p + bias))->B & 1;
 }
 
