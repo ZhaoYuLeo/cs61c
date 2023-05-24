@@ -18,9 +18,9 @@
 #include <errno.h>
 #include "imageloader.h"
 
-//Return the state of the cell at the given row/col.
-//This is one part of the implement of the fun evaluateOneCell. Shouldn't be viewed outside this file.
-int _state(Image *image, int raw_row, int raw_col) {
+//The following three funs started with '_' are parts of the implement of the fun evaluateOneCell and shouldn't be viewed outside this file.
+//Return the color of the cell at the given row/col.
+Color *_color(Image *image, int raw_row, int raw_col) {
     Color **p = image->image;
     int cols = image->cols;
     int rows = image->rows;
@@ -29,7 +29,26 @@ int _state(Image *image, int raw_row, int raw_col) {
     //The left of the left is the right, the right of the right is the left.
     int col = (raw_col + cols) % cols;
     int bias = row * cols + col;
-    return (*(p + bias))->B & 1;
+    return *(p + bias);
+}
+
+//Each number represents the alive number of the digit of given n.
+//Actually return the binary of n as if it is decimal
+int _alive_ns(uint8_t n) {
+    if (n == 0) {
+        return 0;
+    }
+    return (n & 1) + 10 * _alive_ns(n >> 1);
+}
+
+//Each digit of n is a state. Each number of alive is the number of alive neighbors.
+//Each digit of the return value is the next state of the given state decoded by the rule.
+uint8_t _convert(uint8_t n, int alive, uint32_t rule) {
+    if (n == 0 && alive == 0) {
+        return 0;
+    }
+    int digit = (rule >> (9 * (n & 1) + (alive % 10))) & 1;
+    return digit + 2 * _convert(n >> 1, alive / 10, rule); 
 }
 
 //Determines what color the cell at the given row/col should be. This function allocates space for a new Color.
@@ -39,19 +58,27 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 {
 	//YOUR CODE HERE
     //Assume the rule is a hexadecimal number between 0x00000 and 0x3FFFF.
+    Color *my_color = _color(image, row, col); 
     //State: alive(1) or dead(0)
-    int my_state = _state(image, row, col); 
     //The number of alive neighbors
-    int alive_n = _state(image, row - 1, col) + _state(image, row + 1, col)
-                  + _state(image, row, col - 1) + _state(image, row, col + 1)
-                  + _state(image, row - 1, col - 1) + _state(image, row + 1, col + 1) 
-                  + _state(image, row - 1, col + 1) + _state(image, row + 1, col - 1);
+    int neighbors[8][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}};
+    int alive[] = {0, 0, 0}; 
+    for (int i = 0; i < 8; i += 1) {
+        Color *n_c = _color(image, row + neighbors[i][0], col + neighbors[i][1]);
+        //We won't add with carry.
+        alive[0] += _alive_ns(n_c->R); 
+        alive[1] += _alive_ns(n_c->G); 
+        alive[2] += _alive_ns(n_c->B);
+    }
     //Determines color by rule
     Color *decoded;
     if ((decoded = (Color *) malloc(sizeof(Color))) == NULL) {
         exit(-1);
     }
-    decoded->R = decoded->G = decoded->B = 255 * (rule >> (9 * my_state + alive_n) & 1);
+    //Almost same with the table clarified
+    decoded->R = _convert(my_color->R, alive[0], rule);
+    decoded->G = _convert(my_color->G, alive[1], rule);
+    decoded->B = _convert(my_color->B, alive[2], rule); 
     return decoded;
 }
 
@@ -107,7 +134,8 @@ int main(int argc, char **argv)
     }
     int base = 16;
     char *endptr, *str = argv[2];
-    errno = 0; /* To distinguish success/failure after call */
+    //To distinguish success/failure after call
+    errno = 0;
     uint32_t rule = strtol(str, &endptr, base);
     //Error occurred(overflow) or nothing converted. 
     if (errno != 0 || endptr == str) { 
