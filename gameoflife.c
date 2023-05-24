@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <errno.h>
 #include "imageloader.h"
 
 //Return the state of the cell at the given row/col.
@@ -60,7 +61,24 @@ Image *life(Image *image, uint32_t rule)
 {
 	//YOUR CODE HERE
     //Assume the rule is a hexadecimal number between 0x00000 and 0x3FFFF.
-    return image;
+    //If I can pass function as argument, maybe I can merge them into one.
+    Image *extracted;
+    if ((extracted = (Image *) malloc(sizeof(Image)))== NULL) {
+        exit(-1);
+    }
+    uint32_t rows = extracted->rows = image->rows;
+    uint32_t cols = extracted->cols = image->cols;
+    if ((extracted->image = (Color **) calloc(rows * cols, sizeof(Color *))) == NULL) {
+       exit(-1);
+    }
+    Color **p = extracted->image;
+    for (int i = 0; i < rows; i += 1) {
+        for (int j = 0; j < cols; j += 1) {
+            *p = evaluateOneCell(image, i, j, rule);
+            p += 1;
+        }
+    }
+    return extracted;
 }
 
 /*
@@ -81,17 +99,25 @@ You may find it useful to copy the code from steganography.c, to start.
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
-    Image *image = readData(argv[1]);
-    writeData(image);
-    printf("\nThe next generation of the file is: \n");
-    for (int i = 0; i < image->rows; i += 1) {
-        for (int j = 0; j < image->cols - 1; j += 1) {
-            Color *decoded = evaluateOneCell(image, i, j, 0x1808);
-            printf("%3hhu %3hhu %3hhu   ", decoded->R, decoded->G, decoded->B);
-            free(decoded);
-        }
-        Color *decoded = evaluateOneCell(image, i, image->cols - 1, 0x1808);
-        printf("%3hhu %3hhu %3hhu\n", decoded->R, decoded->G, decoded->B);
-        free(decoded);
+    char *error_msg = "\tusage: ./gameOfLife filename rule\n\tfilename is an ASCII PPM file (type P3) with maximum value 255.\n\trule is a hex number beginning with 0x; Life is 0x1808.\n";
+    //Wrong number of arguments
+    if (argc != 3) {
+        printf("%s", error_msg);
+        exit(-1);
     }
+    int base = 16;
+    char *endptr, *str = argv[2];
+    errno = 0; /* To distinguish success/failure after call */
+    uint32_t rule = strtol(str, &endptr, base);
+    //Error occurred(overflow) or nothing converted. 
+    if (errno != 0 || endptr == str) { 
+        printf("%s", error_msg);
+        exit(-1);
+    }
+    Image *image = readData(argv[1]);
+    Image *next = life(image, rule);
+    writeData(next);
+    free(image);
+    free(next);
+    return 0;
 }
